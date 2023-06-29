@@ -159,7 +159,7 @@ class TestPolynomial(unittest.TestCase):
         quotient, remainder = poly1 / poly2
         self.assertEqual(quotient, Polynomial("x"))
         self.assertEqual(remainder, Polynomial("- 1"))
-        
+
         F_7 = make_prime_field(7)
         poly3 = Polynomial("- 1 + x^2", F_7)
         poly4 = Polynomial("3", F_7)

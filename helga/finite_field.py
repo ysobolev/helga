@@ -14,7 +14,9 @@ def make_finite_field(p, n, irreducible_polynomial_string=None):
         if irreducible_polynomial_string is None:
             raise NotImplementedError("TODO: pick irreducible polynomial")
         else:
-            irreducible_polynomial = Polynomial(irreducible_polynomial_string, base_field)
+            irreducible_polynomial = Polynomial(
+                irreducible_polynomial_string, base_field
+            )
         divisor = irreducible_polynomial
 
     class FiniteFieldElement:
@@ -112,7 +114,7 @@ def make_finite_field(p, n, irreducible_polynomial_string=None):
         def inverse(self):
             if n == 1:
                 return self.__class__(pow(self.value, -1, self.field_characteristic))
-            
+
             t = Polynomial(0, self.base_field)
             new_t = Polynomial(1, self.base_field)
             r = self.divisor
