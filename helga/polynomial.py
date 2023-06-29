@@ -204,6 +204,11 @@ class Polynomial:
                 f"cannot divide polynomials over different rings {self.ring.__name__} and {rhs.ring.__name__}"
             )
 
+        assert rhs.degree >= 0
+
+        if self.ring is int and rhs.coefficients[rhs.degree] != self.ring(1):
+            raise ValueError("divisor is not monic")
+
         quotient = Polynomial({}, ring=self.ring)
         remainder = Polynomial(self.coefficients.copy(), ring=self.ring)
 
@@ -250,7 +255,7 @@ class Polynomial:
     @property
     def degree(self):
         if len(self.coefficients) == 0:
-            return -1 
+            return -1
         return max(self.coefficients.keys())
 
     def __repr__(self):
