@@ -1,5 +1,5 @@
 from fractions import Fraction
-from helga.algos import gcd
+import math
 import re
 
 
@@ -104,6 +104,10 @@ def make_polynomial_ring(base_ring):
         def __init__(self, coefficients=None):
             if coefficients is None:
                 coefficients = {}
+   
+            # TODO: consolidate this with polynomial()
+            if not isinstance(coefficients, dict):
+                coefficients = {0: coefficients}
 
             for key, value in coefficients.items():
                 if not isinstance(value, base_ring):
@@ -118,6 +122,9 @@ def make_polynomial_ring(base_ring):
             self.coefficients = coefficients
             self.ring = base_ring
             self.indeterminate = "x"
+
+        def cast(self, new_ring):
+            return polynomial(self.coefficients, ring=new_ring)
 
         def __reduce__(self):
             # This allows the class to be pickled.
@@ -273,19 +280,7 @@ def make_polynomial_ring(base_ring):
 
         def content(self):
             if self.ring is int:
-                coefficients = list(self.coefficients.values())
-                if len(coefficients) == 0:
-                    return 0
-
-                if len(coefficients) == 1:
-                    return coefficients[0]
-
-                accum = coefficients[0]
-                for i in range(1, len(coefficients)):
-                    accum = gcd(accum, coefficients[i])
-
-                return accum
-
+                return math.gcd(*self.coefficients.values())
             elif self.ring is Fraction:
                 max_denom = max(x.denominator for x in self.coefficients.values())
                 int_poly = polynomial(

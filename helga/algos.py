@@ -1,3 +1,8 @@
+from helga.ring import is_euclidean_domain, is_polynomial_ring, get_base_ring
+from helga.polynomial import make_polynomial_ring, polynomial
+from fractions import Fraction
+
+
 def extended_ea(a, b, ring=int):
     (old_r, r) = (a, b)
     (old_s, s) = (ring(1), ring(0))
@@ -13,13 +18,24 @@ def extended_ea(a, b, ring=int):
 
 
 def gcd(a, b, ring=int):
-    u, v = extended_ea(a, b, ring=ring)
-    return a * u + b * v
+    if is_euclidean_domain(ring):
+        u, v = extended_ea(a, b, ring=ring)
+        return a * u + b * v
+
+    if is_polynomial_ring(ring) and get_base_ring(ring) is int:
+        return int_poly_gcd(a, b)
+
+    raise NotImplementedError
 
 
-def poly_gcd(a, b, base_ring):
-    pass
-
+def int_poly_gcd(a, b):
+    content_gcd = gcd(a.content(), b.content(), ring=int)
+    primitive_gcd = gcd(
+        a.primitive_part().cast(Fraction),
+        b.primitive_part().cast(Fraction),
+        ring=make_polynomial_ring(Fraction),
+    )
+    return content_gcd * primitive_gcd.cast(int)
 
 def inv(n, p):
     coeff = extended_ea(n, p)[0]
