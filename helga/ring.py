@@ -27,6 +27,9 @@ def field_of_fractions(ring):
 
 
 def is_euclidean_domain(ring):
+    if ring is int:
+        return True
+
     if is_field(ring):
         return True
 
