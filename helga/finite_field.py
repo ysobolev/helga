@@ -1,4 +1,6 @@
-from helga.polynomial import Polynomial
+from helga.polynomial import polynomial
+
+FIELDS = {}
 
 
 def make_prime_field(p):
@@ -6,6 +8,10 @@ def make_prime_field(p):
 
 
 def make_finite_field(p, n, irreducible_polynomial_string=None):
+    name = f"F_{p ** n}"
+    if name in FIELDS:
+        return FIELDS[name]
+
     if n == 1:
         divisor = p
         base_field = None
@@ -14,7 +20,7 @@ def make_finite_field(p, n, irreducible_polynomial_string=None):
         if irreducible_polynomial_string is None:
             raise NotImplementedError("TODO: pick irreducible polynomial")
         else:
-            irreducible_polynomial = Polynomial(
+            irreducible_polynomial = polynomial(
                 irreducible_polynomial_string, base_field
             )
         divisor = irreducible_polynomial
@@ -28,8 +34,9 @@ def make_finite_field(p, n, irreducible_polynomial_string=None):
                 self.base_field = base_field
             self.field_characteristic = p
 
-            if n != 1 and type(value) is not Polynomial:
-                value = Polynomial(value, self.base_field)
+            # TODO: clean up this type check
+            if n != 1 and not type(value).__name__.endswith("[x]"):
+                value = polynomial(value, self.base_field)
 
             value = value % divisor
             if n == 1 and value < 0:
@@ -115,11 +122,11 @@ def make_finite_field(p, n, irreducible_polynomial_string=None):
             if n == 1:
                 return self.__class__(pow(self.value, -1, self.field_characteristic))
 
-            t = Polynomial(0, self.base_field)
-            new_t = Polynomial(1, self.base_field)
+            t = polynomial(0, self.base_field)
+            new_t = polynomial(1, self.base_field)
             r = self.divisor
             new_r = self.value
-            while new_r != Polynomial(0, self.base_field):
+            while new_r != polynomial(0, self.base_field):
                 quotient = (r / new_r)[0]
                 r, new_r = new_r, r - quotient * new_r
                 t, new_t = new_t, t - quotient * new_t
@@ -134,6 +141,7 @@ def make_finite_field(p, n, irreducible_polynomial_string=None):
         def __str__(self):
             return str(self.value)
 
-    FiniteFieldElement.__name__ = f"F_{p ** n}"
+    FiniteFieldElement.__name__ = name
+    FIELDS[name] = FiniteFieldElement
 
     return FiniteFieldElement

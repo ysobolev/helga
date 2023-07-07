@@ -1,18 +1,24 @@
-def extended_ea(a, b):
-    assert a > 0
-    assert b > 0
-
+def extended_ea(a, b, ring=int):
     (old_r, r) = (a, b)
-    (old_s, s) = (1, 0)
-    (old_t, t) = (0, 1)
+    (old_s, s) = (ring(1), ring(0))
+    (old_t, t) = (ring(0), ring(1))
 
-    while r != 0:
+    while r != ring(0):
         q = old_r // r
         (old_r, r) = (r, old_r - q * r)
         (old_s, s) = (s, old_s - q * s)
         (old_t, t) = (t, old_t - q * t)
 
     return (old_s, old_t)
+
+
+def gcd(a, b, ring=int):
+    u, v = extended_ea(a, b, ring=ring)
+    return a * u + b * v
+
+
+def poly_gcd(a, b, base_ring):
+    pass
 
 
 def inv(n, p):
@@ -48,3 +54,17 @@ def fft(vec, w, p):
     top = [(even[i] + pow(w, i + k // 2, p) * odd[i]) % p for i in range(k // 2)]
 
     return bottom + top
+
+
+def prime_factors(n):
+    i = 2
+    factors = []
+    while i * i <= n:
+        if n % i:
+            i += 1
+        else:
+            n //= i
+            factors.append(i)
+    if n > 1:
+        factors.append(n)
+    return factors

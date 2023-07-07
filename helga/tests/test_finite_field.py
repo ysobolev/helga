@@ -1,7 +1,7 @@
 import unittest
 
 from helga.finite_field import make_finite_field, make_prime_field
-from helga.polynomial import Polynomial
+from helga.polynomial import polynomial
 
 
 class TestPrimeField(unittest.TestCase):
@@ -107,11 +107,11 @@ class TestNonPrimeField(unittest.TestCase):
         F_7 = make_prime_field(7)
         F_343 = make_finite_field(7, 3, "x^3 - 3")
         self.assertEqual(
-            F_343(Polynomial("x^2 + 1", F_7)).value, Polynomial("x^2 + 1", F_7)
+            F_343(polynomial("x^2 + 1", F_7)).value, polynomial("x^2 + 1", F_7)
         )
-        self.assertEqual(F_343("x^2 + 1").value, Polynomial("x^2 + 1", F_7))
-        self.assertEqual(F_343("x^3 - 3").value, Polynomial(0, F_7))
-        self.assertEqual(F_343("x^4 + 2").value, Polynomial("3x + 2", F_7))
+        self.assertEqual(F_343("x^2 + 1").value, polynomial("x^2 + 1", F_7))
+        self.assertEqual(F_343("x^3 - 3").value, polynomial(0, F_7))
+        self.assertEqual(F_343("x^4 + 2").value, polynomial("3x + 2", F_7))
 
     def test_inverse(self):
         F_7 = make_prime_field(7)
