@@ -1,13 +1,41 @@
 from helga.polynomial import polynomial
+from helga.algos import is_irreducible
 
 FIELDS = {}
+
+
+def pick_irreducible_polynomial(p, n):
+    F_p = make_prime_field(p)
+    if p == 2:
+        if n == 2:
+            return polynomial("x^2 + x + 1", F_p)
+        else:
+            for k in range(1, n):
+                poly = polynomial({n: 1, k: 1, 0: 1}, F_p)
+                if is_irreducible(poly):
+                    return poly
+            for a in range(3, n):
+                for b in range(2, a):
+                    for c in range(1, b):
+                        poly = polynomial({n: 1, a: 1, b: 1, c: 1, 0: 1}, F_p)
+                        if is_irreducible(poly):
+                            return poly
+            raise RuntimeError("Could not find irreducible polynomial")
+    else:
+        for a in range(p):
+            for b in range(p):
+                poly = polynomial({n: 1, 1: a, 0: b}, F_p)
+                if is_irreducible(poly):
+                    return poly
+
+    raise RuntimeError("Could not find irreducible polynomial")
 
 
 def make_prime_field(p):
     return make_finite_field(p, 1)
 
 
-def make_finite_field(p, n, irreducible_polynomial_string=None):
+def make_finite_field(p, n, irreducible_polynomial=None):
     name = f"F_{p ** n}"
     if name in FIELDS:
         return FIELDS[name]
@@ -17,12 +45,8 @@ def make_finite_field(p, n, irreducible_polynomial_string=None):
         base_field = None
     else:
         base_field = make_prime_field(p)
-        if irreducible_polynomial_string is None:
-            raise NotImplementedError("TODO: pick irreducible polynomial")
-        else:
-            irreducible_polynomial = polynomial(
-                irreducible_polynomial_string, base_field
-            )
+        if irreducible_polynomial is None:
+            irreducible_polynomial = pick_irreducible_polynomial(p, n)
         divisor = irreducible_polynomial
 
     class FiniteFieldElement:
@@ -142,6 +166,7 @@ def make_finite_field(p, n, irreducible_polynomial_string=None):
             return str(self.value)
 
     FiniteFieldElement.__name__ = name
+    FiniteFieldElement.characteristic = p
     FIELDS[name] = FiniteFieldElement
 
     return FiniteFieldElement

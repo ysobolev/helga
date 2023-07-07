@@ -43,6 +43,21 @@ def inv(n, p):
         coeff += p
     return coeff
 
+def is_irreducible(f):
+    n = f.degree
+    q = f.ring.characteristic
+    F_q = f.ring
+    factors = list(set(prime_factors(n)))
+    for i in range(len(factors)):
+        n_i = n / factors[i]
+        h = polynomial({q**n_i: 1, 1: -1}, F_q) % f
+        g = gcd(f, h, ring=make_polynomial_ring(F_q))
+        if g.degree != 0:
+            return False
+    g = polynomial({q**n: 1, 1: -1}, F_q) % f
+    if g == polynomial(0, F_q):
+        return True
+    return False
 
 def is_primitive_root(x, p):
     # TODO: only check primes

@@ -105,7 +105,7 @@ class TestPrimeField(unittest.TestCase):
 class TestNonPrimeField(unittest.TestCase):
     def test_construction_from_poly(self):
         F_7 = make_prime_field(7)
-        F_343 = make_finite_field(7, 3, "x^3 - 3")
+        F_343 = make_finite_field(7, 3, polynomial("x^3 - 3", F_7))
         self.assertEqual(
             F_343(polynomial("x^2 + 1", F_7)).value, polynomial("x^2 + 1", F_7)
         )
@@ -115,10 +115,10 @@ class TestNonPrimeField(unittest.TestCase):
 
     def test_inverse(self):
         F_7 = make_prime_field(7)
-        F_343 = make_finite_field(7, 3, "x^3 - 3")
+        F_343 = make_finite_field(7, 3, polynomial("x^3 - 3", F_7))
         self.assertEqual(F_343("x^2 + 1").inverse(), F_343("2x^2 + x + 5"))
 
     def test_pow(self):
         F_7 = make_prime_field(7)
-        F_343 = make_finite_field(7, 3, "x^3 - 3")
+        F_343 = make_finite_field(7, 3, polynomial("x^3 - 3", F_7))
         self.assertEqual(F_343("x^2 + 1") ** 2, F_343("2x^2 + 3x + 1"))
