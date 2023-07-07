@@ -1,26 +1,49 @@
-from numbers import Integral
-from abc import ABC
+from fractions import Fraction
 
 
-class Ring(ABC):
-    @classmethod
-    def is_field(self):
-        return NotImplemented
-
-    @classmethod
-    def ring_eq(self, rhs):
-        return self.__name__ == rhs.__name__
-
-    @classmethod
-    def is_polynomial_ring(self):
-        pass
-
-    @classmethod
-    def base_ring(self):
-        pass
+def rings_equal(lhs, rhs):
+    return lhs.__name__ == rhs.__name__
 
 
-class Integer(Ring, int):
-    @classmethod
-    def is_field(self):
-        return False
+def is_polynomial_ring(ring):
+    return ring.__name__.endswith("[x]")
+
+
+def get_base_ring(ring):
+    assert is_polynomial_ring(ring)
+
+    return ring.base_ring
+
+
+def is_field(ring):
+    return ring is Fraction or ring.__name__.startswith("F")
+
+
+def field_of_fractions(ring):
+    if ring is not int:
+        raise NotImplementedError
+
+    return Fraction
+
+
+def is_euclidean_domain(ring):
+    if is_field(ring):
+        return True
+
+    if is_polynomial_ring(ring) and is_field(get_base_ring(ring)):
+        return True
+
+    return False
+
+
+def is_ufd(ring):
+    if ring in [int, Fraction]:
+        return True
+
+    if is_field(ring):
+        return True
+
+    if is_polynomial_ring(ring) and is_ufd(get_base_ring(ring)):
+        return True
+
+    return False

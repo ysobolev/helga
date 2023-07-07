@@ -353,6 +353,7 @@ def make_polynomial_ring(base_ring):
             return f'polynomial("{polynomial_string}", {self.ring.__name__})'
 
     RingElement.__name__ = name
+    RingElement.base_ring = base_ring
     RINGS[name] = RingElement
 
     return RingElement
