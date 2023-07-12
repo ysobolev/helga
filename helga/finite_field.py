@@ -37,8 +37,9 @@ def make_prime_field(p):
 
 def make_finite_field(p, n, irreducible_polynomial=None):
     name = f"F_{p ** n}"
-    if name in FIELDS:
-        return FIELDS[name]
+    key = (p, n, str(irreducible_polynomial))
+    if key in FIELDS:
+        return FIELDS[key]
 
     if n == 1:
         divisor = p
@@ -167,6 +168,6 @@ def make_finite_field(p, n, irreducible_polynomial=None):
 
     FiniteFieldElement.__name__ = name
     FiniteFieldElement.characteristic = p
-    FIELDS[name] = FiniteFieldElement
+    FIELDS[key] = FiniteFieldElement
 
     return FiniteFieldElement
