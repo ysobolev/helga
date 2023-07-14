@@ -1,6 +1,13 @@
 from fractions import Fraction
 
 
+def infer_ring(values):
+    if not len(values):
+        return int
+
+    return type(next(iter(values)))
+
+
 def rings_equal(lhs, rhs):
     return lhs.__name__ == rhs.__name__
 
