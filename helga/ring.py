@@ -1,5 +1,6 @@
 from fractions import Fraction
 
+Q = Fraction
 
 def infer_ring(values):
     if not len(values):
@@ -25,6 +26,12 @@ def get_base_ring(ring):
 def is_field(ring):
     return ring is Fraction or ring.__name__.startswith("F")
 
+
+def get_characteristic(field):
+    if field is Fraction:
+        return 0
+
+    return field.characteristic
 
 def field_of_fractions(ring):
     if ring is not int:

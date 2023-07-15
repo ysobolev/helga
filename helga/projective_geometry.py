@@ -8,7 +8,12 @@ class ProjectivePoint:
         assert is_field(field)
         self.field = field
 
-        coords = tuple(field(coord) for coord in coords)
+        cast = []
+        for coord in coords:
+            if not isinstance(coord, field):
+                coord = field(coord)
+            cast.append(coord)
+        coords = tuple(cast)
 
         for i in reversed(range(len(coords))):
             factor = coords[i]
@@ -21,6 +26,9 @@ class ProjectivePoint:
     @property
     def dim(self):
         return len(self.coords)
+
+    def __getitem__(self, k):
+        return self.coords[k]
 
     def __eq__(self, rhs):
         if not isinstance(rhs, ProjectivePoint):
