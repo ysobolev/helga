@@ -2,7 +2,7 @@ from helga.projective_geometry import ProjectivePoint
 from helga.ring import get_base_ring, is_field, get_characteristic, Q
 
 
-def make_elliptic_curve(a, b, field=None):
+def make_elliptic_curve(a, b, generator=None, field=None):
     """Create an elliptic curve of the form y^2=x^3+ax+b.
     
     The field characteristic must not be 2 or 3.
@@ -33,6 +33,10 @@ def make_elliptic_curve(a, b, field=None):
         @classmethod
         def identity(cls):
             return cls(point_at_infinity)
+        
+        @classmethod
+        def generator(cls):
+            return cls(generator)
 
         def is_inf(self):
             # Return if this point is the point at infinity
@@ -43,6 +47,12 @@ def make_elliptic_curve(a, b, field=None):
                 return NotImplemented
             
             return self.point == rhs.point
+
+        def __neg__(self):
+            if self.is_inf():
+                return self
+
+            return self.__class__(ProjectivePoint((self.point[0], -self.point[1], self.point[2]), field))
 
         def __add__(self, rhs):
             if not isinstance(rhs, self.__class__):
@@ -68,6 +78,21 @@ def make_elliptic_curve(a, b, field=None):
             y = -self.point[1] + m*(self.point[0] - x)
 
             return self.__class__(ProjectivePoint((x, y, field(1)), field))
+
+        def __mul__(self, n):
+            n = int(n)
+
+            if n < 0:
+                return -self * -n
+            elif n == 0:
+                return self.__class__.identity()
+            elif n % 2 == 0:
+                return (self + self) * (n / 2)
+            else:
+                return self + self * (n - 1)
+
+        def __rmul__(self, n):
+            return self * n
 
         def __repr__(self):
             return f"{self.__class__.__name__}({self.point})"
