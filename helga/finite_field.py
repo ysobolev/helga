@@ -69,6 +69,12 @@ def make_finite_field(p, n, irreducible_polynomial=None):
 
             self.value = value
 
+        def __int__(self):
+            if n == 1:
+                return self.value
+
+            return NotImpelemented
+
         def __eq__(self, rhs):
             return self.value == rhs.value
 
